@@ -1,10 +1,15 @@
 ---
 # tasks file for docker
 
+- name: Check for Atomic Host
+  stat: path=/run/ostree-booted
+  register: atomic_host
+
 - name: install docker
   yum:
     name: docker
     state: latest
+  when: atomic_host.stat.exists == False
 
 - name: check status of disk
   stat:
@@ -35,8 +40,6 @@
   when: 
     - createdockervg.changed
     - docker_data|bool == true
-  tags:
-    - noocp
 
 - name: create fs
   filesystem:
@@ -45,9 +48,6 @@
   when: 
     - createdockervg.changed
     - docker_data|bool == true
-  tags:
-    - noocp
-
 
 - name: create LVOL /var/lib/docker
   lvol:
