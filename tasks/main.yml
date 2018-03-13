@@ -54,19 +54,24 @@
    vg: "{{docker_vg_name}}"
    lv: "{{docker_lv2_name}}"
    size: "{{docker_lv2_size}}"
-  when: createdockervg.changed
+  when:
+   - createdockervg.changed
+   - docker_var|bool == true
   
 - name: create fs
   filesystem:
    fstype: xfs
    dev: /dev/mapper/{{docker_vg_name}}-{{docker_lv2_name}}
-  when: createdockervg.changed
+  when: 
+   - createdockervg.changed
+   - docker_var|bool == true
 
 - name: Stop Docker service
   service:
    state: stopped
    name: docker 
-  when: createdockervg.changed
+  when: 
+   - createdockervg.changed
 
 - name: Mount /opt/docker/data
   mount:
@@ -83,6 +88,9 @@
    src: /dev/mapper/{{docker_vg_name}}-{{docker_lv2_name}}
    fstype: xfs
    state: mounted
+  when: 
+   - createdockervg.changed
+   - docker_var|bool == true
 
 - name: Change docker-storage configuration
   template:
@@ -105,7 +113,9 @@
 
 - name: Remove any Docker configuration to clean disk
   command: rm -rf /var/lib/docker/*
-  when: createdockervg.changed
+  when: 
+   - createdockervg.changed
+   - docker_var|bool == true
 
 - name: Start Docker service
   service:
