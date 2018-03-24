@@ -7,7 +7,7 @@
 
 - name: install docker
   yum:
-    name: docker
+    name: docker-{{ docker_version }}
     state: latest
   when: atomic_host.stat.exists == False
 

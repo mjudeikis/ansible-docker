@@ -9,3 +9,4 @@ docker_lv2_size: +50%FREE
 docker_pool_size: +90%FREE
 docker_data: false
 docker_var: true
+docker_version: 1.12.6
